@@ -1,3 +1,6 @@
+import "Keycodes.lib"
+import "Speed.lib"
+
 set window (screenw()-300 )/2, (screenh() - 400)/2, 520, 540
 
 
@@ -43,17 +46,17 @@ do
 rem ---------------start game loop--------------
 
     rem --------------------- update
- 		rem update mouse variable to current mouse pos
-		mx = mousex()
-	  my = mousey()
+         rem update mouse variable to current mouse pos
+        mx = mousex()
+      my = mousey()
     c = clickObj(s,mx,my,stars)  
-	  c = clickStars(stars,mx,my,points)
+     c = clickStars(stars,mx,my,points)
 
     rem -------------------- render
-	  set color 255, 255, 255
-		scale -1.1,-2.1
-	  draw image sun , s.x, s.y ,0,0,s.w,s.h
-		r = renderStars(stars)
+      set color 255, 255, 255
+      scale -1.1,-2.1
+     draw image sun, s.x, s.y, 0, 0, s.w, s.h
+        r = renderStars(stars)
     rem draw points to screen
     set caret 10, 10
     write "points: ",points 
@@ -65,8 +68,8 @@ rem ---------------start game loop--------------
 
 rem ---------------end game loop----------------------
     redraw
-    wait 20
-until keydown(" ") or not running()
+    _SPD_HoldFrame 60
+until keydown(VK_SPACE, true) or not running()
 
 
 rem -------------------------star funcs -------------------------
@@ -74,44 +77,44 @@ rem -------------------------star funcs -------------------------
 rem create stars
 
 function createStars?[](num)
-	s?[num]
-	for i = 0 to num-1
-		s[i].x = rnd(400)
-		s[i].y = rnd(400)
-		s[i].w = 40
-		s[i].h = 40
-		s[i].alpha = 255
-		s[i].type$ = "star"
-	next
-	return s
+    s?[num]
+    for i = 0 to num-1
+        s[i].x = rnd(400)
+        s[i].y = rnd(400)
+        s[i].w = 40
+        s[i].h = 40
+        s[i].alpha = 255
+        s[i].type$ = "star"
+    next
+    return s
 endfunc
 
 rem end create stars
 
 rem render stars
 function renderStars(&s?[])
-	star = 1
-	for i = 0 to sizeof(s)-1
+    star = 1
+    for i = 0 to sizeof(s)-1
 
-		set color 255, 255, 255, s[i].alpha
-		draw image star , s[i].x, s[i].y 	
-		s[i].alpha = s[i].alpha -1
-	next
+        set color 255, 255, 255, s[i].alpha
+        draw image star , s[i].x, s[i].y     
+        s[i].alpha = s[i].alpha -1
+    next
 
 set color 255, 255, 255,255
-	return 0 
+    return 0 
 endfunc
 rem end render stars
 
 rem handale stars being clicked
 function clickStars(&s?[],mx,my,&points)
-	
-	for i = 0 to sizeof(s)-1
+    
+    for i = 0 to sizeof(s)-1
 
-		c = clickObj(s[i],mx,my,s) 	
-		if c and s[i].alpha>10 then points = points +1;
+        c = clickObj(s[i],mx,my,s)     
+        if c and s[i].alpha>10 then points = points +1;
 
-	next
+    next
 
 endfunc
 rem end clickStars
@@ -122,36 +125,36 @@ rem -------------------------end star funcs -------------------------
 rem -------------------------sun funcs -------------------------
 function sunClick(&s?[])
 
-	for i = 0 to sizeof(s)-1
-	
-		s[i].alpha = 255	
+    for i = 0 to sizeof(s)-1
+    
+        s[i].alpha = 255    
 
-	next
+    next
   return 0 
 endfunc
 rem -------------------------end sun funcs -------------------------
 
 rem clickObj
 function clickObj(&o?,mx,my,&s?[])
-	
-	rem debug
+    
+    rem debug
   set color 255, 0, 0
-	rem draw rect o.x , o.y, o.w, o.h
+    rem draw rect o.x , o.y, o.w, o.h
 
-	rem check if object is clicked
-	if mousebutton(0) and	mx < o.w+o.x and mx > o.x and my < o.h+o.y and my > o.y
-		
-		rem move object to a randop position
-		o.x = rnd(200)
-	  o.y = rnd(200)	
-		if o.type$ = "sun"
-			c = sunClick(s)
-		endif
-		return true
+    rem check if object is clicked
+    if mousebutton(0) and    mx < o.w+o.x and mx > o.x and my < o.h+o.y and my > o.y
+        
+        rem move object to a randop position
+        o.x = rnd(200)
+      o.y = rnd(200)    
+        if o.type$ = "sun"
+            c = sunClick(s)
+        endif
+        return true
 
-	endif
+    endif
 
-	return false
+    return false
 endfunc
 rem end clickObj
 
@@ -171,4 +174,3 @@ function rankHandale$(points)
 
     return rank
 endfunc
-rem end rankHandale
