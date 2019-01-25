@@ -1,0 +1,174 @@
+set window (screenw()-300 )/2, (screenh() - 400)/2, 520, 540
+
+
+
+set redraw off
+
+rem ---------asstes vars
+star = 1
+sun = 2
+
+rem ------- load assets---------
+load image star , "res/star.png"
+load image sun , "res/sun.png"
+
+rem star objects
+rem create stars using function createStars
+stars?[] = createStars(5)
+
+rem sun object
+s?
+s.x = rnd(200)
+s.y = rnd(200)
+s.w = 40
+s.h = 40
+s.type$ = "sun"
+
+rem  player points
+points = 0
+
+rem player rank
+rank$ = "none"
+
+rem mouce cordenates
+mx = mousex()
+my = mousey()
+
+rem ---------game loop
+do
+
+    set color 0, 0, 0
+    cls
+
+rem ---------------start game loop--------------
+
+    rem --------------------- update
+ 		rem update mouse variable to current mouse pos
+		mx = mousex()
+	  my = mousey()
+    c = clickObj(s,mx,my,stars)  
+	  c = clickStars(stars,mx,my,points)
+
+    rem -------------------- render
+	  set color 255, 255, 255
+		scale -1.1,-2.1
+	  draw image sun , s.x, s.y ,0,0,s.w,s.h
+		r = renderStars(stars)
+    rem draw points to screen
+    set caret 10, 10
+    write "points: ",points 
+    rem print rank
+    rank = rankHandale(points)
+    set caret 150, 10
+    write "rank: ",rank
+
+
+rem ---------------end game loop----------------------
+    redraw
+    wait 20
+until keydown(" ") or not running()
+
+
+rem -------------------------star funcs -------------------------
+
+rem create stars
+
+function createStars?[](num)
+	s?[num]
+	for i = 0 to num-1
+		s[i].x = rnd(400)
+		s[i].y = rnd(400)
+		s[i].w = 40
+		s[i].h = 40
+		s[i].alpha = 255
+		s[i].type$ = "star"
+	next
+	return s
+endfunc
+
+rem end create stars
+
+rem render stars
+function renderStars(&s?[])
+	star = 1
+	for i = 0 to sizeof(s)-1
+
+		set color 255, 255, 255, s[i].alpha
+		draw image star , s[i].x, s[i].y 	
+		s[i].alpha = s[i].alpha -1
+	next
+
+set color 255, 255, 255,255
+	return 0 
+endfunc
+rem end render stars
+
+rem handale stars being clicked
+function clickStars(&s?[],mx,my,&points)
+	
+	for i = 0 to sizeof(s)-1
+
+		c = clickObj(s[i],mx,my,s) 	
+		if c and s[i].alpha>10 then points = points +1;
+
+	next
+
+endfunc
+rem end clickStars
+
+rem -------------------------end star funcs -------------------------
+
+
+rem -------------------------sun funcs -------------------------
+function sunClick(&s?[])
+
+	for i = 0 to sizeof(s)-1
+	
+		s[i].alpha = 255	
+
+	next
+  return 0 
+endfunc
+rem -------------------------end sun funcs -------------------------
+
+rem clickObj
+function clickObj(&o?,mx,my,&s?[])
+	
+	rem debug
+  set color 255, 0, 0
+	rem draw rect o.x , o.y, o.w, o.h
+
+	rem check if object is clicked
+	if mousebutton(0) and	mx < o.w+o.x and mx > o.x and my < o.h+o.y and my > o.y
+		
+		rem move object to a randop position
+		o.x = rnd(200)
+	  o.y = rnd(200)	
+		if o.type$ = "sun"
+			c = sunClick(s)
+		endif
+		return true
+
+	endif
+
+	return false
+endfunc
+rem end clickObj
+
+
+
+rem rank handler function (changes rank text )
+function rankHandale$(points)
+    rank$="none"
+    if points > 10 then rank = "star clicker"
+    if points > 20 then rank = "pro star clicker"
+    if points > 25 then rank = "master star clicker"
+    if points > 30 then rank = "no life"
+    if points > 35 then rank = "you shod stop you know"
+    if points > 40 then rank = "this game never ends"
+    if points > 50 then rank = "good job you win"
+    if points > 60 then rank = "you can stop now"
+
+    return rank
+endfunc
+rem end rankHandale
